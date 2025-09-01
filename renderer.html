@@ -5,8 +5,17 @@
     <title>Pegasi — Untitled*</title>
     <link rel="stylesheet" href="./renderer.css">
     <link rel="stylesheet" href="./components/sliders/vslider/vslider.css">
+    <link rel="stylesheet" href="./components/sliders/hslider/hslider.css">
   </head>
   <body>
+    <!--<div class="FFmpeg warning" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #0009; z-index: 1000; display: flex; justify-content: center; align-items: center;">
+      <div style="border: 1px solid #ff0055; background-color: #ff0055a1; padding: 1rem; border-radius: 8px; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 0.5rem">
+        <div><b>Oops!</b></div>
+        <div>Pegasi needs <b>FFmpeg</b> to work. Please install it and try again!</div>
+        <div style="opacity: 0.5;">Go to <b>ffmpeg.org</b> for more details</div>
+      </div>
+    </div>-->
+    
     <div class="cover"></div>
     <div style="position: absolute; bottom: 0; right: 0; opacity: 0.2;">Pegasi 0457010925a — Made by Rhodune! Lab with Love ❤️</div>
     <div style="width: 100%; height: 2rem; border-bottom: 1px solid black; display: flex; padding: 4px 8px; justify-content: space-between; background-color: var(--color-background-alt);">
@@ -65,6 +74,7 @@
       <!-- Toolset -->
       <div class="preview">
         Light-plan Preview: Disabled<br>
+        <div id="slider-global-birghtness"></div>
 
         Gabby: <i class="error">Disconnected</i> <br>
         Baudrate: <span style="opacity: 0.3;">460.8kbps</span> <br>
@@ -74,10 +84,14 @@
         <hr>
         Scene cross-fade: <span style="opacity: 0.3;">1.2s</span> <br>
         <hr>
-        <b>Current:</b> <i>Animation Source</i> <i style="color: #11b96b;">Live</i> <br>
+        <b style="color: #11b96b;">Live: </b> <i>Animation Source Test</i> <br>
+        <b style="color: #b99211;">Hot: </b> <i>Untitled Scene</i> <br>
 
-        Sound sync: <span style="opacity: 0.3;">--ms</span>
-        <input type="range" id="volume" name="volume" min="0.0" max="1000.0" style="width: 100%;"/>
+        <div style="display: flex; align-items: center; font-size: 1.2rem;">
+          <b style="color: black; padding: 4px; background-color: #40d13e; border-radius: 4px 0px 0px 4px;">A</b>
+          <div id="mix-slider"></div>
+          <b style="color: black; padding: 4px; background-color: #db8c15; border-radius: 0px 4px 4px 0px;">B</b>
+        </div>
       </div>
     </div>
 

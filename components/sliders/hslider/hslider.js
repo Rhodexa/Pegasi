@@ -1,11 +1,11 @@
-export default class VSlider {
+export default class HSlider {
   constructor(container, { label = null, value = 50 } = {}) {
     this.slider = container;
     
     // Render structure
-    this.slider.classList.add('vslider');
+    this.slider.classList.add('hslider');
     this.slider.innerHTML = `
-        ${label ? `<div class="label">${label}</div>` : ''}
+        ${label ? `<div class="label">${label}</div>` : '<div class="label"></div>'}
         <div class="track">
           <div class="thumb"></div>
         </div>
@@ -29,8 +29,8 @@ export default class VSlider {
   // Calculate % from mouse position
   _getPercentFromEvent(e) {
     const rect = this.track.getBoundingClientRect();
-    const offsetY = e.clientY - rect.top;
-    const percent = 100 - (offsetY / rect.height) * 100;
+    const offsetX = e.clientX - rect.left;
+    const percent = (offsetX / rect.width) * 100;
     return Math.max(0, Math.min(100, percent));
   }
 
@@ -58,8 +58,8 @@ export default class VSlider {
 
   setValue(percent) {
     percent = Math.max(0, Math.min(100, percent));
-    this.track.style.backgroundPosition = `0% ${percent}%`;
-    this.thumb.style.bottom = percent + '%';
+    this.track.style.backgroundPosition = `${100 - percent}% 0%`;
+    this.thumb.style.left = percent + '%';
     this.value = percent;
     if (this._onChange) this._onChange(percent);
   }
