@@ -1,0 +1,48 @@
+.labeled-vslider {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.labeled-vslider .label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    opacity: 0.3;
+    font-size: small;
+    margin-right: 2px;
+}
+
+.vslider {
+    height: 100%;
+    display: flex;
+    cursor: pointer;
+    border: 1px solid #0003;
+    border-radius: 4px;
+    padding: 12px 12px 12px 2px;
+}
+    .vslider:hover{
+        border-color: #fff1;
+        background-color: #ffffff02;
+    }
+
+.vslider .track {
+    position: relative;
+    width: 12px;
+    height: 100%;
+    background: linear-gradient(to top, var(--color-primary) 50%, #0003 50%);
+    background-size: 100% 200%;
+    background-position: 0% 50%; /* painter */
+    border-radius: 8px;
+    border: 2px solid #0003;
+}
+
+.vslider .thumb {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: 24px;
+    height: 12px;
+    background: #fff;
+    border-radius: 2px;
+    bottom: 50%; /* same % as fill height */
+}

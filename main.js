@@ -7,7 +7,7 @@ require('electron-reload')(__dirname, {
   hardResetMethod: 'exit'
 });
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -20,9 +20,21 @@ function createWindow() {
     }
   });
   win.setMenu(null);
-  win.loadFile('index.html');
+  win.loadFile('renderer.html');
   win.webContents.openDevTools();
 }
+
+// IPC listener: Node receives frame info
+ipcMain.on('frame-timestamp', (event, data) => {
+  const { frameIndex, timestamp } = data;
+  //console.log(`Node got frame ${frameIndex} at time ${timestamp.toFixed(3)}s`);
+  
+  // Here you could:
+  // - load/process the frame via FFmpeg
+  // - create UART packet
+  // - send it out
+});
+
 
 app.whenReady().then(createWindow);
 

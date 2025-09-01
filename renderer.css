@@ -1,0 +1,109 @@
+:root {
+    --color-background: #101218;
+    --color-background-alt: #1c1d27;
+    --color-primary: #1e8a69;
+    --color-error: #df194a;
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('./fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 400;
+}
+
+*, ::before, ::after{
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Noto Sans', sans-serif;
+    background-color: #101218;
+    color: white;
+    margin: 0;      
+}
+
+.card{
+    border-radius: 8px;
+    border: solid 1px #fff1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+    .card:hover {
+        border-color: #fff3;
+    }
+    .card.active{
+        border-color: #11b96b80;
+        background-color: #fff1;
+    }
+
+        .card.active::before{
+            content: 'LIVE - A - PAUSED';
+            position: absolute;
+            left: 10px;
+            top: -12px;
+            background-color: #1c1e22;
+            padding: 0 0.5rem;
+            font-weight: 600;
+            color: #11b96b;
+            border-radius: 4px;
+            border: solid 1px #11b96b80;
+        }
+
+    .card.hot{
+        border-color: #b9761180;
+        background-color: #fff1;
+    }
+
+        .card.hot::before{
+            content: 'HOT - B - NO FILE!';
+            position: absolute;
+            left: 10px;
+            top: -12px;
+            background-color: #1c1e22;
+            padding: 0 0.5rem;
+            font-weight: 600;
+            color: #ca790f;
+            border-radius: 4px;
+            border: solid 1px #b9761180;
+        }
+
+.feed{
+    max-width: 30rem;
+    height: 100%;
+    background-color: #0003;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.canvas {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.preview {
+    width: 350px;
+    height: 100;
+    background-color: var(--color-background-alt);
+    top: 0;
+    right: 0;
+    padding: 16px;
+}
+
+hr {
+    opacity: 0.1;
+}
+
+i.error {
+    opacity: 0.6;
+    color: var(--color-error);
+}
