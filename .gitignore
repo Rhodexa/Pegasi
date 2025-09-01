@@ -1,21 +1,40 @@
-# Node stuff
+# Node dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
+
+# Package managers
 package-lock.json
 yarn.lock
 
-# Electron stuff
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
 dist/
 out/
 *.asar
+*.map
+
+# Environment / secrets
+.env
+.env.*       # like .env.development, .env.production
+*.pem        # keys/certs
 
 # OS-specific
 .DS_Store
 Thumbs.db
+*.swp        # vim swap files
 
-# VS Code
+# Editors / IDEs
 .vscode/
+.idea/
+*.iml
+*.code-workspace
 
-# Testing assets
+# Optional: local testing / temp folders
 testing/
+tmp/
+cache/
+electron-builder-cache/
