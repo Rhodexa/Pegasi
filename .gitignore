@@ -1,0 +1,21 @@
+# Node stuff
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Electron stuff
+dist/
+out/
+*.asar
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Testing assets
+testing/
