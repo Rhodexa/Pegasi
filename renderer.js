@@ -1,75 +1,108 @@
+import Scene from "./components/Scene.js";
+
 const scenes = [];
 const sceneContainer = document.getElementById("scenes");
 
+// Track toolbar elements
+const toolbar = document.querySelector(".toolbar");
+const inputTitle = toolbar.querySelector("input[type='text']");
+const btnDelete = toolbar.querySelector("[data-icon='x']").closest("button");
+const btnShiftLeft = toolbar.querySelector("[data-icon='arrow-left']").closest("button");
+const btnShiftRight = toolbar.querySelector("[data-icon='arrow-right']").closest("button");
+const btnOpenFile = toolbar.querySelector("[data-icon='upload']").closest("button");
+const btnCommit = toolbar.querySelector("[data-icon='check']").closest("button");
 
-/* Video controller */
-const video = document.getElementById('videoPlayer');
-const canvas = document.getElementById('pixelCanvas');
-const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-//await window.serial.open("COM5");
-console.log("Serial open, ready!");
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(value, max));
+// Helper: get currently selected scene
+function getSelected() {
+  return scenes.find(s => s.state === "selected");
 }
 
-function gammaCorrect(val, gamma = 2.2) {
-  return Math.pow(val / 255, gamma) * 255;
-}
-
-/*
-video.addEventListener('play', () => {
-  const TARGET_FPS = 30;
-  let lastTick = 0;
-
-  const tick = () => {
-    if (video.paused || video.ended) return;
-
-    const now = performance.now();
-    if (now - lastTick > 1000 / TARGET_FPS) {
-      lastTick = now;
-
-      // draw current frame to canvas
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const frameData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-      // build serial buffer
-      const buf = new Uint8Array(1 + 150*3 + 1); // start + 150 LEDs *3 + end
-      buf[0] = 0x01; // start
-      for (let i = 0; i < 150; i++) {
-        const r = gammaCorrect(frameData[i*4  ]);
-        const g = gammaCorrect(frameData[i*4+1]);
-        const b = gammaCorrect(frameData[i*4+2]);
-        buf[1 + i*3 + 0] = (clamp(r - 10, 0, 255) >> 1) + 0x80;
-        buf[1 + i*3 + 1] = (clamp(g - 10, 0, 255) >> 1) + 0x80;
-        buf[1 + i*3 + 2] = (clamp(b - 10, 0, 255) >> 1) + 0x80;
-      }
-      buf[buf.length - 1] = 0x02; // end
-
-      window.serial.send(buf).catch(err => console.error("Serial fail", err));
-
-    }
-
-    requestAnimationFrame(tick);
-  };
-
-  requestAnimationFrame(tick);
-});
-
-*/
-/* //////////////////////////////////////////////////////////////////////////////// */
-
-import Scene from "./components/Scene.js";
-
+// Add new scene
 function addScene() {
   const scene = new Scene({});
   scenes.push(scene);
   sceneContainer.appendChild(scene.el);
-}
 
-// connect button
+  // When clicked → select this scene
+  scene.el.addEventListener("click", () => {
+    scenes.forEach(s => s.setState("idle"));
+    scene.setState("selected");
+    inputTitle.value = scene.title;
+  });
+}
 document.getElementById("btn-new-scene").addEventListener("click", addScene);
 
-// seed with one
+// --- Toolbar actions ---
+
+// Rename
+inputTitle.addEventListener("input", e => {
+  const scene = getSelected();
+  if (scene) {
+    scene.title = e.target.value;
+    scene.el.querySelector(".scene-title").innerText = scene.title;
+  }
+});
+
+// Delete
+btnDelete.addEventListener("click", () => {
+  const scene = getSelected();
+  if (scene) {
+    scene.el.remove();
+    scenes.splice(scenes.indexOf(scene), 1);
+  }
+});
+
+// Shift left
+btnShiftLeft.addEventListener("click", () => {
+  const scene = getSelected();
+  if (!scene) return;
+  const idx = scenes.indexOf(scene);
+  if (idx > 0) {
+    scenes.splice(idx, 1);
+    scenes.splice(idx - 1, 0, scene);
+    sceneContainer.insertBefore(scene.el, sceneContainer.children[idx - 1]);
+  }
+});
+
+// Shift right
+btnShiftRight.addEventListener("click", () => {
+  const scene = getSelected();
+  if (!scene) return;
+  const idx = scenes.indexOf(scene);
+  if (idx < scenes.length - 1) {
+    scenes.splice(idx, 1);
+    scenes.splice(idx + 1, 0, scene);
+    sceneContainer.insertBefore(scene.el, sceneContainer.children[idx + 2] || null);
+  }
+});
+
+// Open File (basic file picker)
+btnOpenFile.addEventListener("click", () => {
+  const scene = getSelected();
+  if (!scene) return;
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "video/*,image/*";
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (file) scene.loadFile(file);
+  };
+  input.click();
+});
+
+
+// Commit (mark as HOT for now)
+btnCommit.addEventListener("click", () => {
+  const scene = getSelected();
+  if (!scene) return;
+
+  // clear old hot
+  scenes.forEach(s => {
+    if (s.state === "hot") s.setState("idle");
+  });
+  scene.setState("hot");
+});
+
+// Seed one scene so it’s not empty
 addScene();

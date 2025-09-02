@@ -1,58 +1,67 @@
-// components/Scene.js
 export default class Scene {
-  constructor({title = "Untitled Scene", file_path = ""} = {}) {
-    this.title = title;
-    this.file_path = file_path;
-    this.type = ""; // "video" | "image" | ""
-    this.is_live = false;
-    this.is_hot = false;
-    this.is_active = false;
+    constructor({ title = "Untitled Scene", file_path = "" } = {}) {
+        this.title = title;
+        this.file_path = file_path;
+        this.type = ""; // "video" | "image"
+        this.state = "idle"; // idle | selected | active | hot
 
-    this.el = this._createCard();
-  }
+        this.el = this._createCard();
+    }
 
-  _createCard() {
-    const card = document.createElement("div");
-    card.className = "scene-card";
+    _createCard() {
+        const card = document.createElement("div");
+        card.className = "scene-card";
 
-    const controlBar = document.createElement("div");
-    controlBar.className = "control-bar";
-    controlBar.style.display = "flex";
-    controlBar.style.justifyContent = "space-between";
+        const titleEl = document.createElement("div");
+        titleEl.className = "scene-title";
+        titleEl.innerText = this.title;
 
-    const titleEl = document.createElement("div");
-    titleEl.style.opacity = 0.5;
-    titleEl.innerText = this.title;
+        const feed = document.createElement("div");
+        feed.className = "feed";
+        feed.innerText = this.file_path || "No file";
 
-    const feed = document.createElement("div");
-    feed.className = "feed";
-    feed.innerText = this.file_path ? this.file_path : "No file";
+        card.appendChild(titleEl);
+        card.appendChild(feed);
 
-    controlBar.appendChild(titleEl);
-    card.appendChild(controlBar);
-    card.appendChild(feed);
+        card.addEventListener("click", () => this.setState("selected"));
 
-    card.addEventListener("click", () => {
-      this.setActive();
-    });
+        return card;
+    }
 
-    return card;
-  }
+    setState(newState) {
+        this.state = newState;
+        this.el.className = "scene-card"; // reset classes
+        if (newState !== "idle") this.el.classList.add(newState);
+    }
 
-  setActive() {
-    this.is_active = true;
-    this.el.classList.add("selected");
-    // TODO: update toolbar with this scene’s info
-  }
+    loadFile(file) {
+        // Accept File object from <input type=file>
+        this.file_path = file.name;
+        this.type = file.type.startsWith("video") ? "video" : "image";
 
-  setInactive() {
-    this.is_active = false;
-    this.el.classList.remove("active");
-  }
+        const feed = this.el.querySelector(".feed");
+        feed.innerHTML = ""; // clear previous
 
-  loadFile(file_path) {
-    this.file_path = file_path;
-    this.type = file_path.endsWith(".mp4") ? "video" : "image";
-    this.el.querySelector(".feed").innerText = file_path;
-  }
+        let mediaEl;
+        if (this.type === "video") {
+            mediaEl = document.createElement("video");
+            mediaEl.src = URL.createObjectURL(file);
+            mediaEl.controls = true;
+            mediaEl.autoplay = false;
+            mediaEl.style.maxWidth = "100%";
+            mediaEl.style.maxHeight = "100%";
+            mediaEl.addEventListener("play", () => {
+                document.querySelectorAll(".scene-card video").forEach(v => {
+                    if (v !== mediaEl) v.pause();
+                });
+            });
+        } else {
+            mediaEl = document.createElement("img");
+            mediaEl.src = URL.createObjectURL(file);
+            mediaEl.style.maxWidth = "100%";
+            mediaEl.style.maxHeight = "100%";
+        }
+
+        feed.appendChild(mediaEl);
+    }
 }
