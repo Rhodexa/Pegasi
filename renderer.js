@@ -1,33 +1,48 @@
 import Scene from "./components/Scene.js";
 
+// === Scene + track management ===
 const scenes = [];
 const sceneContainer = document.getElementById("scenes");
 
-// Track toolbar elements
+// Toolbar elements
 const toolbar = document.querySelector(".toolbar");
 const inputTitle = toolbar.querySelector("input[type='text']");
-const btnDelete = toolbar.querySelector("[data-icon='x']").closest("button");
+const btnDelete = toolbar.querySelector("[data-icon='trash']").closest("button");
 const btnShiftLeft = toolbar.querySelector("[data-icon='arrow-left']").closest("button");
 const btnShiftRight = toolbar.querySelector("[data-icon='arrow-right']").closest("button");
 const btnOpenFile = toolbar.querySelector("[data-icon='upload']").closest("button");
-const btnCommit = toolbar.querySelector("[data-icon='check']").closest("button");
+const btnCommit = toolbar.querySelector("#btn-go-live").closest("button");
 
-// Helper: get currently selected scene
+// --- Helpers ---
 function getSelected() {
-  return scenes.find(s => s.state === "selected");
+  return scenes.find(s => s.flags.selected);
 }
 
-// Add new scene
+function getLiveScene() {
+  return scenes.find(s => s.flags.active) || scenes.find(s => s.flags.hot);
+}
+
+function updateToolbar() {
+  const scene = getSelected();
+  if (!scene) {return;} 
+
+  inputTitle.value = scene.title;
+
+  const warningIcon = document.getElementById("warning");
+  if (warningIcon) warningIcon.style.display = scene.file_path ? "inline" : "none";
+}
+
+// --- Add new scene ---
 function addScene() {
   const scene = new Scene({});
   scenes.push(scene);
   sceneContainer.appendChild(scene.el);
 
-  // When clicked → select this scene
   scene.el.addEventListener("click", () => {
-    scenes.forEach(s => s.setState("idle"));
-    scene.setState("selected");
-    inputTitle.value = scene.title;
+    // Deselect all other scenes
+    scenes.forEach(s => s.setFlag("selected", false));
+    scene.setFlag("selected", true);
+    updateToolbar();
   });
 }
 document.getElementById("btn-new-scene").addEventListener("click", addScene);
@@ -76,10 +91,21 @@ btnShiftRight.addEventListener("click", () => {
   }
 });
 
-// Open File (basic file picker)
+// Open File
 btnOpenFile.addEventListener("click", () => {
   const scene = getSelected();
   if (!scene) return;
+
+  // Show warning if scene already has a file
+  const warningIcon = document.getElementById("warning");
+  if (warningIcon) warningIcon.style.display = scene.file_path ? "inline" : "none";
+
+  if (scene.file_path) {
+    const confirmReplace = confirm(
+      "This Scene already has a file. Are you sure you want to replace it?"
+    );
+    if (!confirmReplace) return;
+  }
 
   const input = document.createElement("input");
   input.type = "file";
@@ -87,22 +113,58 @@ btnOpenFile.addEventListener("click", () => {
   input.onchange = e => {
     const file = e.target.files[0];
     if (file) scene.loadFile(file);
+    
+    // Show warning icon now that scene has a file
+    warningIcon.style.display = "inline";
   };
   input.click();
 });
 
-
-// Commit (mark as HOT for now)
+// Commit / make LIVE
 btnCommit.addEventListener("click", () => {
   const scene = getSelected();
   if (!scene) return;
 
-  // clear old hot
-  scenes.forEach(s => {
-    if (s.state === "hot") s.setState("idle");
-  });
-  scene.setState("hot");
+  // Clear previous active flags
+  scenes.forEach(s => s.setFlag("active", false));
+
+  // Set current scene as LIVE
+  scene.setFlag("active", true);
 });
 
-// Seed one scene so it’s not empty
+// Seed first scene
 addScene();
+
+// === Pixel Scrapper ===
+const pixelCanvas = document.getElementById("pixelCanvas");
+const pixelCtx = pixelCanvas.getContext("2d");
+const TARGET_FPS_PERIOD = 1000 / 24;
+const LOW_SPEED_FPS_PERIOD = 1000;
+
+function scrapperLoop() {
+  const liveScene = getLiveScene();
+  if (!liveScene) {
+    requestAnimationFrame(scrapperLoop);
+    return;
+  }
+
+  const feedEl = liveScene.el.querySelector(".feed");
+  const mediaEl = feedEl.querySelector("video, img");
+
+  if (mediaEl) {
+    const is_image = mediaEl.tagName === "IMG";
+    const reduce_speed = mediaEl.paused || mediaEl.ended || is_image;
+
+    pixelCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+    pixelCtx.drawImage(mediaEl, 0, 0, pixelCanvas.width, pixelCanvas.height);
+
+    const fps = reduce_speed ? LOW_SPEED_FPS_PERIOD : TARGET_FPS_PERIOD;
+    setTimeout(() => requestAnimationFrame(scrapperLoop), fps);
+  } else {
+    requestAnimationFrame(scrapperLoop);
+  }
+}
+
+
+// Start the scrapper loop
+scrapperLoop();
