@@ -1,9 +1,3 @@
-.hslider .label {
-    opacity: 0.4;
-    font-size: small;
-    margin-bottom: 8px;
-}
-
 .hslider {
     width: 100%;
     display: flex;
@@ -15,6 +9,13 @@
     .hslider:hover{
         background-color: #fff1;
     }
+
+.hslider .label {
+    opacity: 0.4;
+    font-size: small;
+    margin-bottom: 8px;
+    user-select: none;
+}
 
 .hslider .track {
     position: relative;

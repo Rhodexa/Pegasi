@@ -7,96 +7,49 @@
     <link rel="stylesheet" href="./components/sliders/vslider/vslider.css">
     <link rel="stylesheet" href="./components/sliders/hslider/hslider.css">
   </head>
-  <body>
-    <!--<div class="FFmpeg warning" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #0009; z-index: 1000; display: flex; justify-content: center; align-items: center;">
-      <div style="border: 1px solid #ff0055; background-color: #ff0055a1; padding: 1rem; border-radius: 8px; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 0.5rem">
-        <div><b>Oops!</b></div>
-        <div>Pegasi needs <b>FFmpeg</b> to work. Please install it and try again!</div>
-        <div style="opacity: 0.5;">Go to <b>ffmpeg.org</b> for more details</div>
-      </div>
-    </div>-->
-    
+
+  <body>    
     <div class="cover"></div>
-    <div style="position: absolute; bottom: 0; right: 0; opacity: 0.2;">Pegasi 0457010925a — Made by Rhodune! Lab with Love ❤️</div>
-    <div style="width: 100%; height: 2rem; border-bottom: 1px solid black; display: flex; padding: 4px 8px; justify-content: space-between; background-color: var(--color-background-alt);">
-      <div>
-        File
-      </div>
 
-      <div>
-        ≡
-      </div>
-    </div>
-    <div style="display: flex; position: relative; height: 100%;">
-      <div class="canvas">      
-        <div class="card active">
-          <div>
-            Animation Source Test <i style="opacity: 0.2;">Type: Audiovisual Sequence</i>
-          </div>
-          <div style="display: flex; gap: 8px">
-            <div class="feed" style="padding: 0">
-              <video id="videoPlayer" controls style="width: 100%">
-                <source src="./testing/videos/mlp.mp4">      
-                Something went wrong with the video embed
-              </video>
+    <div style="display: flex; flex-grow: 1;">
+
+      <div class="canvas-viewport">
+        
+        <div class="toolbar" style="width: 100%; height: 3rem; border-bottom: 1px solid black; display: flex; padding: 4px 8px; justify-content: space-between; align-items: center; background-color: var(--color-background-alt);">
+          <div style="display: flex; height: 100%;">
+            <button style="background-color: #5e1a26;"> <div data-icon="x"></div> </button>
+            <button> <div data-icon="arrow-left"></div> </button>
+            <button> <div data-icon="arrow-right"></div> </button>
+            <input type="text" placeholder="Untitled Scene" style="height: 100%; background-color: #0001; border: 1px solid #0003;">
+            <button style="display: flex; align-items: center; gap: 16px"> <span data-icon="upload"></span> Open File </button>
+            <button style="background-color: #137e4c;"> <div data-icon="check"></div> </button>
+          </div>  
+          <button id="btn-new-scene" style="display: flex; align-items: center; gap: 16px"> <span data-icon="plus"></span> New Scene</button>
+        </div>
+
+        <div class="canvas-content">
+          <div class="track-list">
+            <div class="track">
+              <div class="track-title">Track 1</div>
+              <div id="scenes" class="track-scenes">
+              </div>
             </div>
-
-            <div id="slider1"></div>
-            <div id="slider2"></div>
-            <div id="slider3"></div>
-          </div>
-        </div>
-    
-        <div class="card hot">
-          <div>
-            Untitled Scene <i style="opacity: 0.2;">Type: Static</i>
-          </div>
-          <div class="feed">
-            <span style="opacity: 0.3;">No file selected</span>
           </div>
         </div>
 
-        <div class="card">
-          <div>
-            Untitled Scene 2 <i style="opacity: 0.2;">Type: Static</i>
-          </div>
-          <div class="feed">
-            <span style="opacity: 0.3;">No file selected</span>
-          </div>
-        </div>
-
-        <div class="card" style="width: 30rem; font-size: 1rem; opacity: .5; justify-content: center; align-items: center; text-align: center; cursor: pointer; background-color: #fff1;">
-          + <br>
-          Add new Scene
-        </div>
       </div>
 
       <!-- Toolset -->
       <div class="preview">
+        Output <br>   
         <span style="opacity: 0.5;">Pixel Scrapper</span>
-        <canvas id="pixelCanvas" width="150" height="3" style="width:100%;aspect-ratio: 2 / 1; image-rendering:pixelated;"></canvas></canvas>
-
-        <div id="slider-global-birghtness"></div>
-
-        Gabby: <i class="error">Disconnected</i> <br>
-        Baudrate: <span style="opacity: 0.3;">460.8kbps</span> <br>
-        FPS: <span style="opacity: 0.3;">24</span> <hr>
-        Console: <i class="error">Disconnected</i> <br>
-        Baudrate: <span style="opacity: 0.3;">Bluetooth</span> <br>
-        <hr>
-        Scene cross-fade: <span style="opacity: 0.3;">1.2s</span> <br>
-        <hr>
-        <b style="color: #11b96b;">Live: </b> <i>Animation Source Test</i> <br>
-        <b style="color: #b99211;">Hot: </b> <i>Untitled Scene</i> <br>
-
-        <div style="display: flex; align-items: center; font-size: 1.2rem;">
-          <b style="color: black; padding: 4px; background-color: #40d13e; border-radius: 4px 0px 0px 4px;">A</b>
-          <div id="mix-slider"></div>
-          <b style="color: black; padding: 4px; background-color: #db8c15; border-radius: 0px 4px 4px 0px;">B</b>
-        </div>
+        <canvas id="pixelCanvas" width="150" height="1" style="width:100%;aspect-ratio: 2 / 1; image-rendering:pixelated;">
+        </canvas>
       </div>
     </div>
+    
 
     <script type="module" src="./renderer.js"></script>   
+    <script type="module" src="./icons/icons.js"></script>  
   </body>
 </html>
