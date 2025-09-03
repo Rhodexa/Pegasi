@@ -1,6 +1,11 @@
 export default class HSlider {
-  constructor(container, { label = null, value = 50 } = {}) {
+  constructor(container, { label = null, value = 50, numbers = false, min = 0, max = 100, unit = "" } = {}) {
+    this.has_numbers = numbers;
+    this.min = min;
+    this.max = max;
     this.slider = container;
+    this.label_content = label;
+    this.unit = unit;
     
     // Render structure
     this.slider.classList.add('hslider');
@@ -13,6 +18,7 @@ export default class HSlider {
 
     this.track = this.slider.querySelector('.track');
     this.thumb = this.track.querySelector('.thumb');
+    this.label = this.slider.querySelector('.label');
 
     this.dragging = false;
     this.value = 0;
@@ -61,6 +67,10 @@ export default class HSlider {
     this.track.style.backgroundPosition = `${100 - percent}% 0%`;
     this.thumb.style.left = percent + '%';
     this.value = percent;
+
+    this.label.textContent = this.label_content ? this.label_content : "";
+    this.label.textContent += this.has_numbers ? `: ${Math.round(percent*(0.01 * (this.max - this.min)) + this.min)}${this.unit}` : "";
+
     if (this._onChange) this._onChange(percent);
   }
 

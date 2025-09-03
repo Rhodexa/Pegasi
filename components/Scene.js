@@ -11,7 +11,7 @@ export default class Scene {
       active: false, // LIVE
     };
 
-    this.el = this._createCard();
+    this.element = this._createCard();
     this._updateClasses();
   }
 
@@ -41,7 +41,7 @@ export default class Scene {
     if (selected) classes.push("selected");
     if (hot) classes.push("hot");
     if (active) classes.push("active");
-    this.el.className = classes.join(" ");
+    this.element.className = classes.join(" ");
   }
 
   // Generic flag setter
@@ -62,7 +62,7 @@ export default class Scene {
     this.file_path = file.name;
     this.type = file.type.startsWith("video") ? "video" : "image";
 
-    const feed = this.el.querySelector(".feed");
+    const feed = this.element.querySelector(".feed");
     feed.innerHTML = ""; // clear previous
 
     let mediaEl;
