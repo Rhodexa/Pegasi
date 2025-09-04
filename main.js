@@ -9,13 +9,12 @@ require('electron-reload')(__dirname, {
 // App ///////////////////////////////////////////////////////////////////
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { readFileSync } = require("fs");
-const { join } = require("path");
-
-const { SerialPort } = require('serialport');
+const { SerialPort }  = require("serialport");
 
 // ///////////////////////////////////////////////////////////////////////
+let win;
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1590,
     height: 840,
     icon: __dirname + '\\assets\\icon.ico',
@@ -26,48 +25,66 @@ function createWindow() {
     }
   });
   win.setMenu(null);
-  win.loadFile('renderer.html');
+  win.loadFile('./renderer.html');
   win.webContents.openDevTools();
 }
 
 ipcMain.handle("get-icon", (event, name) => {
   try {
-    const file = join(__dirname, "icons", `${name}.svg`);
+    const file = path.resolve(__dirname, "icons", `${name}.svg`);
     return readFileSync(file, "utf-8");
-  } catch {
+  } catch (err) {
+    console.error(`Failed to load icon ${name}:`, err);
     return null;
   }
 });
 
-// ///////////////////////////////////////////////////////////////////////
+// Serial ///////////////////////////////////////////////////////////////////////
+
+let currentPort = null;
+
+// --- Serial IPC ---
+ipcMain.handle("serial:list", async () => {
+  const ports = await SerialPort.list();
+  return ports.map(p => p.path);
+});
+
+ipcMain.handle("serial:connect", async (event, path) => {
+  if (currentPort) currentPort.close();
+  currentPort = new SerialPort({ path, baudRate: 460800 });
+
+  currentPort.on("close", () => {
+    win.webContents.send("serial:disconnected");
+  });
+
+  currentPort.on("error", (err) => {
+    win.webContents.send("serial:error", err.message);
+  });
+
+  return new Promise((resolve, reject) => {
+    currentPort.on("open", () => resolve(true));
+    currentPort.on("error", (err) => reject(err.message));
+  });
+});
+
+ipcMain.on("serial:send", (event, data) => {
+  if (!currentPort || !currentPort.isOpen) return;
+  
+  // If renderer sent Uint8Array, write directly
+  if (data instanceof Uint8Array) {
+    currentPort.write(data, (err) => {
+      if (err) console.error("Serial write error:", err);
+    });
+  } else if (typeof data === "string") {
+    currentPort.write(data, (err) => {
+      if (err) console.error("Serial write error:", err);
+    });
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////
 
 app.whenReady().then(createWindow);
-
-let port;
-
-ipcMain.handle("serial-open", async (_, path) => {
-  port = new SerialPort({
-    path,
-    baudRate: 460800,
-  });
-
-  return new Promise((resolve, reject) => {
-    port.on("open", () => resolve("OK"));
-    port.on("error", reject);
-  });
-});
-
-ipcMain.handle("serial-send", async (_, buffer) => {
-  if (!port) throw new Error("Port not open");
-  return new Promise((resolve, reject) => {
-    port.write(buffer, (err) => {
-      if (err) reject(err);
-      else resolve("SENT");
-    });
-  });
-});
-
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

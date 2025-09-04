@@ -8,7 +8,7 @@ export default class Scene {
     this.flags = {
       selected: false,
       hot: false,
-      active: false, // LIVE
+      live: false, // LIVE
     };
 
     this.element = this._createCard();
@@ -36,11 +36,11 @@ export default class Scene {
   }
 
   _updateClasses() {
-    const { selected, hot, active } = this.flags;
+    const { selected, hot, live } = this.flags;
     const classes = ["scene-card"];
     if (selected) classes.push("selected");
     if (hot) classes.push("hot");
-    if (active) classes.push("active");
+    if (live) classes.push("live");
     this.element.className = classes.join(" ");
   }
 

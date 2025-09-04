@@ -1,6 +1,6 @@
-import Scene from "./components/Scene.js";
-import HSlider from "./components/sliders/hslider/hslider.js"
-import Toast from "./components/toast/toast.js"
+import Scene from "../components/Scene.js";
+import HSlider from "../components/sliders/hslider/hslider.js"
+import Toast from "../components/toast/toast.js"
 
 // === Scene + track management ===
 const scenes = [];
@@ -14,13 +14,14 @@ const btnShiftLeft = toolbar.querySelector("[data-icon='arrow-left']").closest("
 const btnShiftRight = toolbar.querySelector("[data-icon='arrow-right']").closest("button");
 const btnOpenFile = toolbar.querySelector("[data-icon='upload']").closest("button");
 const btnCommit = document.querySelector("#btn-commit");
+const btnPreheat = document.querySelector('#btn-preheat');
 
 const slider_fade_time = new HSlider(document.getElementById("fade-time"), { label: "Transition time", numbers: true, min: 0, max: 2000, unit: "ms" });
 
 // --- Helpers ---
 function scenes_getSelected() { return scenes.find(s => s.flags.selected); }
-function scenes_getLive() { return scenes.find(s => s.flags.active) || scenes.find(s => s.flags.hot); }
-function scenes_getHot() { return scenes.find(s => s.flags.hot) || scenes.find(s => s.flags.active); }
+function scenes_getLive() { return scenes.find(s => s.flags.live); }
+function scenes_getHot() { return scenes.find(s => s.flags.hot); }
 
 function toolbar_update() {
   const scene = scenes_getSelected();
@@ -124,55 +125,89 @@ btnOpenFile.addEventListener("click", () => {
   };
   input.click();
 });
+// Seed first scene
+addScene();
+
+// Preheat
+btnPreheat.addEventListener("click", () => {
+  const scene = scenes_getSelected();
+  if (!scene) {
+    Toast("No scene selected");
+    return;
+  }
+  if (scene.flags.live) {
+    Toast("Cannot heat a Live scene");
+    return
+  }
+
+  scenes.forEach(s => s.setFlag("hot", false));
+  scene.setFlag("hot", true);  
+});
 
 // Commit
 btnCommit.addEventListener("click", () => {
   const scene = scenes_getHot();
   if (!scene) {
-    Toast("No HOT scenes to commit!");
+    Toast("Empty Hot Source — Nothing to Commit");
     return;
   }
-
-  // Clear previous active flags
-  scenes.forEach(s => s.setFlag("active", false));
-
-  // Set current scene as LIVE
-  scene.setFlag("active", true);
+  scenes.forEach(s => s.setFlag("hot", false));
+  scenes.forEach(s => s.setFlag("live", false));
+  scene.setFlag("live", true);
 });
 
-// Seed first scene
-addScene();
 
-// === Pixel Scrapper ===
-const pixelCanvas = document.getElementById("pixelCanvas");
-const pixelCtx = pixelCanvas.getContext("2d");
-const TARGET_FPS_PERIOD = 1000 / 24;
-const LOW_SPEED_FPS_PERIOD = 1000;
+const canvas_hot = document.getElementById("canvas-hot-source");
+const ctx_hot = canvas_hot.getContext("2d");
 
-function scrapperLoop() {
-  const liveScene = scenes_getLive();
-  if (!liveScene) {
-    requestAnimationFrame(scrapperLoop);
+function scrapperHotLoop(){
+  const scene_hot = scenes_getHot();
+  if(scene_hot){
+    const feed_hot_element = scene_hot.element.querySelector(".feed");
+    const media_hot_element = feed_hot_element.querySelector("video, img");
+    ctx_hot.clearRect(0, 0, canvas_live.width, canvas_live.height);
+    ctx_hot.drawImage(media_hot_element, 0, 0, canvas_live.width, canvas_live.height);
+  }
+  setTimeout(() => scrapperHotLoop(), 1000);
+}
+
+const canvas_live = document.getElementById("canvas-live-source");
+const ctx_live = canvas_live.getContext("2d");
+function scrapperLiveLoop() {
+  const scene_hot = scenes_getHot();
+  const scene_live = scenes_getLive();
+
+  if (!(scene_hot || scene_live)) { // Nothing to draw? Let's poll only occasionally
+    setTimeout(() => requestAnimationFrame(scrapperLiveLoop), 1000);
     return;
   }
 
-  const feedEl = liveScene.element.querySelector(".feed");
-  const mediaEl = feedEl.querySelector("video, img");
+  if (!scene_live) { // No live scene but yes hot scene? Potentially there will be so let's poll more oftenly
+    setTimeout(() => requestAnimationFrame(scrapperLiveLoop), 100); // ~10FPS
+    return;
+  }  
 
-  if (mediaEl) {
-    const is_image = mediaEl.tagName === "IMG";
-    const reduce_speed = mediaEl.paused || mediaEl.ended || is_image;
+  const feed_live_element = scene_live.element.querySelector(".feed");
+  const media_live_element = feed_live_element.querySelector("video, img");
 
-    pixelCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
-    pixelCtx.drawImage(mediaEl, 0, 0, pixelCanvas.width, pixelCanvas.height);
-
+  if (media_live_element)
+  {
+    const is_image = media_live_element.tagName === "IMG";
+    const reduce_speed = media_live_element.paused || media_live_element.ended || is_image;
+      ctx_live.clearRect(0, 0, canvas_live.width, canvas_live.height);
+      ctx_live.drawImage(media_live_element, 0, 0, canvas_live.width, canvas_live.height);
     const fps = reduce_speed ? LOW_SPEED_FPS_PERIOD : TARGET_FPS_PERIOD;
-    setTimeout(() => requestAnimationFrame(scrapperLoop), fps);
-  } else {
-    requestAnimationFrame(scrapperLoop);
+    setTimeout(() => requestAnimationFrame(scrapperLiveLoop), fps);
+    return;
+  }
+
+  else
+  {
+    requestAnimationFrame(scrapperLiveLoop);
   }
 }
 
 
 // Start the scrapper loop
-scrapperLoop();
+scrapperLiveLoop();
+scrapperHotLoop();

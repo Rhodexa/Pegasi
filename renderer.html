@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>Pegasi — Untitled*</title>
     <link rel="stylesheet" href="./renderer.css">
-    <link rel="stylesheet" href="./components/sliders/vslider/vslider.css">
-    <link rel="stylesheet" href="./components/sliders/hslider/hslider.css">
-    <link rel="stylesheet" href="./components/toast/toast.css">
+    <link rel="stylesheet" href="./renderer/components/sliders/vslider/vslider.css">
+    <link rel="stylesheet" href="./renderer/components/sliders/hslider/hslider.css">
+    <link rel="stylesheet" href="./renderer/components/toast/toast.css">
   </head>
 
   <body>    
     <div class="cover"></div>
+    <div style="position: fixed; bottom: 16px; left: 16px; opacity: 0.6;"> ❤️ <span style="opacity: 0.2;">Made by Rhodune! Lab with Love — dev0409250210</span></div>
     
     <div style="display: flex; flex-grow: 1;">
       <div class="canvas-viewport">
@@ -40,39 +41,53 @@
       </div>
       
       <!-- Toolset -->
-      <div class="preview">
-        <span style="opacity: 0.5;">Pixel Scrapper</span><br>
-
-        <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 1rem; margin-top: 1rem;">
-          <button id="btn-preheat" style="display: flex; align-items: center; justify-content: center; background-color: #a16419; font-size: 0.9rem; flex-grow: 1; flex-direction: column;"> <span data-icon="coffee"></span> <b>Preheat</b> </button>
-        </div>          
-
-        <canvas id="pixelCanvasHot" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated;  border: 2px solid #ffae0020; background-color: #0002;"></canvas>
-        <div style="width: 100%; display: flex; justify-content: center; align-items: center; opacity: 0.7; flex-direction: column; margin-bottom: 5px;">
-          <span style="color: #ffae00;">Hot Source</span>
-          <div data-icon="arrow-down" data-size="32" style="margin-bottom: -6px;"></div>
-          <span style="color:#03ffa7">Live Source</span>
-        </div>
-        <canvas id="pixelCanvas" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated; border: 2px solid #03ffa720; background-color: #0002;"></canvas>
-
-        <div style="border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
-          <button id="btn-commit" style="display: flex; align-items: center; justify-content: center; background-color: #137e4c; width: 100%; letter-spacing: 1px;">
-            <b>COMMIT</b>
-            <span data-icon="arrow-right"></span>
-          </button>
-          <select style="padding: 8px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
+      <div class="preview" style="display: flex; flex-direction: column; align-items: center;">
+        
+        <button id="btn-preheat" style="width: 100%; display: flex; align-items: center; justify-content: center; background-color: #a16419; font-size: 0.9rem; gap: 4px; padding: 8px;"> <span data-icon="coffee"></span> <b>Preheat</b> </button>
+        <div data-icon="arrow-down" style="margin-top: -4px; opacity: 0.5;"></div>
+        <span style="color: #ffae00;">Hot Source</span>
+        <canvas id="canvas-hot-source" width="150" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated;  border: 2px solid #ffae0020; background-color: #0002;"></canvas>
+        <div data-icon="arrow-down" style="margin-top: -4px; opacity: 0.5;"></div>
+        <div style="width: 100%; border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
+          <select id="select-fade-mode" style="padding: 8px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
             <option>Mode: Fade Interpolate</option>
             <option>Mode: Fade through Black</option>
           </select>
+          <div id="fade-time"></div>
         </div>
-        <div id="fade-time"></div>
+        <button id="btn-commit" style="display: flex; align-items: center; justify-content: center; background-color: #137e4c; width: 100%; letter-spacing: 1px; margin-top: 1rem;">
+          <span data-icon="check"></span>
+          <b>COMMIT</b>
+        </button>
+        <div data-icon="arrow-down" style="margin-top: -4px; opacity: 0.5;"></div>
+        <span style="color:#03ffa7">Live Source</span>
+        <canvas id="canvas-live-source" width="150" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated; border: 2px solid #03ffa720; background-color: #0002;"></canvas>
+        <br>
+        <hr>
+        <span style="opacity: 0.5;">Gabby Controls</span>
+        <div style="width: 100%; color: #fff7">
+          Port
+          <span id="port-status" style="margin-top: 4px; font-size: 0.9rem; color: #f55;"></span>
+          <div style="width: 100%; border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
+            <select id="select-gabby-port" style="padding: 8px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
+              <option></option>
+            </select>
+          </div>
+          <br>
+          Baudrate
+          <div style="width: 100%; border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
+            <select style="padding: 8px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
+              <option>460800kbps</option>
+            </select>
+          </div>
+
+        </div>
 
       </div>
     </div>
     <div id="toast-container" class="toast-container"></div>
     
-
-    <script type="module" src="./renderer.js"></script>   
-    <script type="module" src="./icons/icons.js"></script>  
+    <script type="module" src="./renderer/app.js"></script> 
+    <script type="module" src="./icons/icons.js"></script>
   </body>
 </html>

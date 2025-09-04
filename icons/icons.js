@@ -8,7 +8,7 @@ async function loadIcons() {
 
         const svg = await window.icons.get(name);
         if (!svg) {
-            console.log("nope");
+            console.log(`Couln't load icon ${name}`);
             continue;
         }
 

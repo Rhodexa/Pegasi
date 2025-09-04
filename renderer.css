@@ -152,10 +152,10 @@ button {
     .scene-card.selected{
         border: 2px dashed #0fc9c988;
     }
-    .scene-card.active{
-       outline: 1px solid #11b96b80;
+    .scene-card.live{
+       outline: 2px solid #11b96b;
     }    
-        .scene-card.active::before{
+        .scene-card.live::before{
             content: 'LIVE';
             position: absolute;
             left: 10px;
@@ -169,7 +169,7 @@ button {
         }
 
     .scene-card.hot{
-        outline: 1px solid #b9761180;
+        outline: 2px solid #b97611;
     }
         .scene-card.hot::before{
             content: 'HOT';
@@ -203,6 +203,7 @@ button {
 }
 
 hr {
+    width: 100%;
     opacity: 0.1;
 }
 
