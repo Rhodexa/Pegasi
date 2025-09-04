@@ -6,26 +6,23 @@
     <link rel="stylesheet" href="./renderer.css">
     <link rel="stylesheet" href="./components/sliders/vslider/vslider.css">
     <link rel="stylesheet" href="./components/sliders/hslider/hslider.css">
+    <link rel="stylesheet" href="./components/toast/toast.css">
   </head>
 
   <body>    
     <div class="cover"></div>
-
+    
     <div style="display: flex; flex-grow: 1;">
-
       <div class="canvas-viewport">
-        
-        <div class="toolbar" style="width: 100%; height: 3rem; border-bottom: 1px solid black; display: flex; padding: 4px 8px; justify-content: space-between; align-items: center; background-color: var(--color-background-alt);">
-          <button style="background-color: transparent; border: 2px solid #fff1; margin-right: 1rem; display: flex; align-items: center; gap: 16px"> <span data-icon="download" style="opacity: 0.5;"></span> Save  </button>
-          <div id="context-toolbar" class="hidden" style="display: flex; height: 100%; gap: 4px">
-            <button style="background-color: #5e1a26;"> <div data-icon="trash"></div> </button>
-            <button> <div data-icon="arrow-left"></div> </button>
-            <button> <div data-icon="arrow-right"></div> </button>
-            <input type="text" placeholder="Scene name" style="height: 100%; background-color: #0001; border: 1px solid #0003;border-bottom: 1px solid var(--color-primary);">
-            <button style="display: flex; align-items: center; gap: 16px"> <span data-icon="upload"></span> Open File <span id="warning" data-icon="alert-triangle" data-color="#fdb500"></span> </button>
-            <button id="btn-new-scene" style="display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--color-primary);"> <span data-icon="plus"></span> New Scene</button>
-          </div>
-          <div></div>
+        <div class="toolbar" style="width: 100%; height: 3rem; border-bottom: 1px solid black; display: flex; padding: 4px 8px; justify-content: space-between; align-items: center; background-color: var(--color-background-alt);">          
+          <button style="background-color: transparent; border: 2px solid #fff1; margin-right: 1rem; display: flex; align-items: center; gap: 16px"> <span data-icon="download" style="opacity: 0.5;"></span> Save  </button>          
+            <div id="context-toolbar" class="hidden" style="display: flex; height: 100%; gap: 4px">
+              <button style="background-color: #5e1a26;"> <div data-icon="trash"></div> </button>
+              <button> <div data-icon="arrow-left"></div> </button>
+              <button> <div data-icon="arrow-right"></div> </button>
+              <input type="text" placeholder="Scene name" style="height: 100%; background-color: #0001; border: 1px solid #0003;border-bottom: 1px solid var(--color-primary);">
+              <button style="display: flex; align-items: center; gap: 16px"> <span data-icon="upload"></span> Open File <span id="warning" data-icon="alert-triangle" data-color="#fdb500"></span> </button>            </div>
+          <button id="btn-new-scene" style="display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--color-primary);"> <span data-icon="plus"></span> New Scene</button>
         </div>
         
         <div class="canvas-content">
@@ -44,27 +41,35 @@
       
       <!-- Toolset -->
       <div class="preview">
-        <div>
-          <div style="width: 100%; display: flex; justify-content: space-between;">
-            <button id="btn-preheat" style="display: flex; align-items: center; justify-content: center; background-color: #a17619; font-size: 0.9rem; flex-grow: 1; flex-direction: column;"> <span data-icon="coffee"></span> <b>Preheat</b> </button>
-            <div style="border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
-              <button id="btn-commit" style="display: flex; align-items: center; justify-content: center; gap: 16px; background-color: #137e4c; width: 100%; letter-spacing: 2px;"> <b>COMMIT</b> <span data-icon="arrow-right"></span> </button>
-              <select style="padding: 4px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
-                <option>Transition: Fade</option>
-                <option>Transition: Blackout</option>
-              </select>
-            </div>
-          </div>
-          <div id="fade-time"></div>
-        </div>
+        <span style="opacity: 0.5;">Pixel Scrapper</span><br>
 
-        <span style="opacity: 0.7;">Pixel Scrapper</span><br> 
-        <span style="opacity: 0.5; color:#03ffa7">Live Source</span><br> 
-        <canvas id="pixelCanvas" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering:pixelated; border: 2px solid #0002; background-color: #0001;"></canvas>
-        <span style="opacity: 0.5; color: #ffae00;">Hot Source</span><br> 
-        <canvas id="pixelCanvasHot" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering:pixelated;  border: 2px solid #0002; background-color: #0001;"></canvas>
+        <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 1rem; margin-top: 1rem;">
+          <button id="btn-preheat" style="display: flex; align-items: center; justify-content: center; background-color: #a16419; font-size: 0.9rem; flex-grow: 1; flex-direction: column;"> <span data-icon="coffee"></span> <b>Preheat</b> </button>
+        </div>          
+
+        <canvas id="pixelCanvasHot" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated;  border: 2px solid #ffae0020; background-color: #0002;"></canvas>
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; opacity: 0.7; flex-direction: column; margin-bottom: 5px;">
+          <span style="color: #ffae00;">Hot Source</span>
+          <div data-icon="arrow-down" data-size="32" style="margin-bottom: -6px;"></div>
+          <span style="color:#03ffa7">Live Source</span>
+        </div>
+        <canvas id="pixelCanvas" width="75" height="3" style="width:100%; aspect-ratio: 3 / 1; image-rendering: pixelated; border: 2px solid #03ffa720; background-color: #0002;"></canvas>
+
+        <div style="border: 1px solid #0002; border-radius: 4px; background-color: var(--color-background);">
+          <button id="btn-commit" style="display: flex; align-items: center; justify-content: center; background-color: #137e4c; width: 100%; letter-spacing: 1px;">
+            <b>COMMIT</b>
+            <span data-icon="arrow-right"></span>
+          </button>
+          <select style="padding: 8px; color: #fff5; background-color: transparent; outline: none; border: none; width: 100%; font-size: 1rem;">
+            <option>Mode: Fade Interpolate</option>
+            <option>Mode: Fade through Black</option>
+          </select>
+        </div>
+        <div id="fade-time"></div>
+
       </div>
     </div>
+    <div id="toast-container" class="toast-container"></div>
     
 
     <script type="module" src="./renderer.js"></script>   

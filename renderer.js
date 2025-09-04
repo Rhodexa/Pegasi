@@ -1,5 +1,6 @@
 import Scene from "./components/Scene.js";
 import HSlider from "./components/sliders/hslider/hslider.js"
+import Toast from "./components/toast/toast.js"
 
 // === Scene + track management ===
 const scenes = [];
@@ -14,7 +15,7 @@ const btnShiftRight = toolbar.querySelector("[data-icon='arrow-right']").closest
 const btnOpenFile = toolbar.querySelector("[data-icon='upload']").closest("button");
 const btnCommit = document.querySelector("#btn-commit");
 
-const slider_fade_time = new HSlider(document.getElementById("fade-time"), { label: "Fade time", numbers: true, min: 0, max: 2000, unit: "ms" });
+const slider_fade_time = new HSlider(document.getElementById("fade-time"), { label: "Transition time", numbers: true, min: 0, max: 2000, unit: "ms" });
 
 // --- Helpers ---
 function scenes_getSelected() { return scenes.find(s => s.flags.selected); }
@@ -104,6 +105,7 @@ btnOpenFile.addEventListener("click", () => {
   if (warningIcon) warningIcon.style.display = scene.file_path ? "inline" : "none";
 
   if (scene.file_path) {
+    Toast("You're about to REPLACE a file");
     const confirmReplace = confirm(
       "This Scene already has a file. Are you sure you want to replace it?"
     );
@@ -123,10 +125,13 @@ btnOpenFile.addEventListener("click", () => {
   input.click();
 });
 
-// Commit / make LIVE
+// Commit
 btnCommit.addEventListener("click", () => {
-  const scene = scenes_getSelected();
-  if (!scene) return;
+  const scene = scenes_getHot();
+  if (!scene) {
+    Toast("No HOT scenes to commit!");
+    return;
+  }
 
   // Clear previous active flags
   scenes.forEach(s => s.setFlag("active", false));
